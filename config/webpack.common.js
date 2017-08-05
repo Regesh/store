@@ -332,13 +332,13 @@ module.exports = function (options) {
       *
       * See: https://github.com/ampedandwired/html-webpack-plugin
       */
-      new HtmlWebpackPlugin({
-        template: 'src/index.html',
-        title: METADATA.title,
-        chunksSortMode: 'dependency',
-        metadata: METADATA,
-        inject: 'body'
-      }),
+      // new HtmlWebpackPlugin({
+      //   template: 'src/index.html',
+      //   title: METADATA.title,
+      //   chunksSortMode: 'dependency',
+      //   metadata: METADATA,
+      //   inject: 'body'
+      // }),
 
       /**
        * Plugin: HtmlElementsPlugin

@@ -4,71 +4,55 @@
 import {
   Component,
   OnInit,
-  ViewEncapsulation
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { AppState } from './app.service';
+import { SDKService } from './services/sdk.service';
 
+import { Observable } from 'rxjs/Observable';
+import { Store } from '@ngrx/store';
+import * as fromRoot from './reducers';
+import * as layout from './actions/layout';
 /**
  * App Component
  * Top Level Component
  */
 @Component({
   selector: 'app',
-  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [
     './app.component.css'
   ],
   template: `
-    <nav>
-      <a [routerLink]=" ['./'] "
-        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
-        Index
-      </a>
-      <a [routerLink]=" ['./home'] "
-        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
-        Home
-      </a>
-      <a [routerLink]=" ['./detail'] "
-        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
-        Detail
-      </a>
-      <a [routerLink]=" ['./barrel'] "
-        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
-        Barrel
-      </a>
-      <a [routerLink]=" ['./about'] "
-        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
-        About
-      </a>
-    </nav>
-
-    <main>
-      <router-outlet></router-outlet>
-    </main>
-
-    <pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>
-
-    <footer>
-      <span>WebPack Angular 2 Starter by <a [href]="url">@AngularClass</a></span>
-      <div>
-        <a [href]="url">
-          <img [src]="angularclassLogo" width="25%">
-        </a>
-      </div>
-    </footer>
+  sdk ready: {{sdkReady$ | async}}<br/>
+    {{showSidenav$ | async }}
+    <button (click)="open()">open nav</button> | <button (click)="close()">close nav</button>
   `
 })
 export class AppComponent implements OnInit {
   public angularclassLogo = 'assets/img/angularclass-avatar.png';
   public name = 'Angular 2 Webpack Starter';
   public url = 'https://twitter.com/AngularClass';
-
+  showSidenav$: Observable<boolean>;
+  sdkReady$: Observable<boolean>;
   constructor(
-    public appState: AppState
-  ) {}
+    public appState: AppState,
+    private store: Store<fromRoot.State>,
+    private sdkService: SDKService
+  ) {
+    this.showSidenav$ = this.store.select(fromRoot.getShowSidenav);
+    this.sdkReady$ = this.store.select(fromRoot.getSDKReady);
+  }
 
   public ngOnInit() {
     console.log('Initial App State', this.appState.state);
+    this.sdkService.init();
+  }
+  open(){
+  this.store.dispatch(new layout.OpenSidenavAction());
+  }
+  close(){
+    this.store.dispatch(new layout.CloseSidenavAction());
   }
 
 }
